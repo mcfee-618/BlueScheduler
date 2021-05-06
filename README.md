@@ -3,7 +3,7 @@ A simple todo scheduler for Python
 
 ## 基本介绍
 
-BlueScheduler是高效的生产力管理平台，集成了计划管理和计划提醒功能，利用vscode的Todo+(https://github.com/fabiospampinato/vscode-todo-plus)插件来完成计划的编写，利用内置后台可以回顾任务完成情况及未来计划。
+BlueScheduler是高效的生产力管理平台，集成了计划管理和计划提醒功能，利用vscode的Todo+(https://github.com/fabiospampinato/vscode-todo-plus) 插件来完成计划的编写，利用内置后台可以回顾任务完成情况及未来计划。
 
 ## TODO+插件介绍
 
