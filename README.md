@@ -81,7 +81,7 @@ Archive:
 ```
 cd BlueScheduler && pip3 install -r requirements.txt; 
 cd BlueScheduler && sh start.sh;
-http://127.0.0.1:9288//admin/todo/list 待完成的todo
-http://127.0.0.1:9288//admin/plan/list 全部todo
+http://127.0.0.1:9288/admin/todo/list 待完成的todo
+http://127.0.0.1:9288/admin/plan/list 全部todo
 ```
 
