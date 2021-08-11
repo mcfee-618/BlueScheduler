@@ -27,6 +27,7 @@ Cancelled: ✘ x X [-]
 @critical @high @low         优先级设置
 @lasted(1w3d2h24m17s)        持续时间
 @est(2h30m)                  预估时间
+@schedule(21-01-31 15:03)    截止时间
 
 ```
 
@@ -84,10 +85,11 @@ cd BlueScheduler && pip3 install -r requirements.txt;
 cd BlueScheduler && sh start.sh;
 http://127.0.0.1:9288/admin/todo/list 待完成的todo
 http://127.0.0.1:9288/admin/plan/list 全部todo
+http://127.0.0.1:9288/admin/delay/list delay的todo
 http://127.0.0.1:9288/work/list/n 最近n天完成的todo
 ```
 
 ## TODO
 
-* 支持预期时间:task支持@schedule(21-01-21 14:31)
+* 支持截止时间：实现财富自由@schedule(21-01-21 14:31)
 
