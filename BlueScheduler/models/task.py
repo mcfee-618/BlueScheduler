@@ -1,6 +1,6 @@
 import re
 import time
-from datetime import datetime,date
+from datetime import datetime,date,time
 from enum import Enum
 
 ## identifer
@@ -12,6 +12,7 @@ cancel_pattern = "^✘.*"
 started_pattern = ".*@started\((.*)\)"
 done_pattern = ".*@done\((.*)\)"
 cancelled_pattern = ".*@cancelled\((.*)\)"
+schedule_pattern = ".*@schedule\((.*)\)"
 
 ## tag-remark
 remark_pattern = ".*@remark\((.*)\)"
@@ -42,6 +43,7 @@ class Task:
         self.text = text
         self.started_time = None
         self.finished_time = None
+        self.schedule_time = None
         self.status = status
         self.level = TaskLevel.high
         self.remark = None
@@ -63,13 +65,13 @@ class Task:
         status = Task.parse_status(content)
         name = Task.parse_name(content)
         task = Task(name, content, status)
-        ## level
+        # level
         levels = {low_pattern: TaskLevel.low, high_pattern: TaskLevel.high,
                   critical_pattern: TaskLevel.critical}
         for pattern in levels:
             if pattern in content:
                 task.level = levels[pattern]
-        ## tags
+        # tags
         sub_contents = content.split("@")
         for sub_content in sub_contents:
             sub_content = "@" + sub_content
@@ -79,8 +81,24 @@ class Task:
                 task.started_time = Task.parse_tag(sub_content, started_pattern)
             if not task.finished_time:
                 task.finished_time = Task.parse_tag(sub_content, done_pattern)
+            if not task.schedule_time:
+                task.schedule_time = Task.parse_tag(sub_content, schedule_pattern)
         return task
-
+    
+    def is_delay(self):
+        if self.schedule_time is None or self.status not in [TaskStatus.new, TaskStatus.start]:
+            return False
+        return Task.parse_date(self.schedule_time) <= datetime.now().date()
+    
+    @property
+    def delay_time(self):
+        if not self.is_delay():
+            return None
+        current_time = datetime.now()
+        schedule_time = datetime.combine(Task.parse_date(self.schedule_time),time())
+        return (current_time-schedule_time).days
+        
+        
     @staticmethod
     def parse_status(content):
         content = content.strip()
@@ -127,8 +145,10 @@ if __name__ == "__main__":
     assert Task.parse_name("✔ 代码文档补充 @done(21-02-02 10:12)") == "代码文档补充"
     assert Task.parse_tag("✔ 代码文档补充 @done(21-02-02 10:12)", done_pattern) == "21-02-02 10:12"
     task = Task.get_task(
-        "✔ 拥塞控制 @started(21-01-21 14:31) @done(21-02-01 19:39) @lasted(1w4d5h8m56s) @critical @remark(很重要)")
+        "拥塞控制 @started(21-01-21 14:31)  @schedule(21-08-01 19:39) @lasted(1w4d5h8m56s) @critical @remark(很重要)")
     assert task.level == TaskLevel.critical
     assert task.remark == "很重要"
     assert Task.parse_date(task.started_time) == date.fromisoformat('2021-01-21')
     assert Task.parse_date(task.started_time) >= date.fromisoformat('2021-01-12')
+    assert task.is_delay()
+    assert task.delay_time == 10

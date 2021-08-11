@@ -9,7 +9,8 @@ import multiprocessing
 
 bind = '127.0.0.1:9288'
 #pidfile = 'output/gunicorn.pid'
-#logfile = 'output/access.log'
+logfile = 'output/access.log'
+errorlog = 'output/error.log'
 
 # 监听队列
 backlog = 1024

@@ -1,10 +1,9 @@
 import re
 
-from BlueScheduler.models.task import *
+from BlueScheduler.models.task import Task, TaskStatus
 
 
 class Project:
-
     def __init__(self, name):
         self.name = name
         self.__completed_tasks = []
@@ -33,9 +32,8 @@ class Project:
             return self.__unstarted_tasks
         elif task_status == TaskStatus.cancel:
             return self.__canceled_tasks
-        
-        
-    def get_completed_tasks(self, start_time , end_time):
+
+    def get_completed_tasks(self, start_time, end_time):
         tasks = []
         for task in self.__completed_tasks:
             if start_time is not None:
@@ -50,7 +48,6 @@ class Project:
                     continue
             tasks.append(task)
         return tasks
-            
 
     @staticmethod
     def is_project(content):

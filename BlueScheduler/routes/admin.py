@@ -1,9 +1,12 @@
+from BlueScheduler.log import logger
 import math
+import logging
 import BlueScheduler.settings as settings
-from datetime import datetime,date,timedelta
+from BlueScheduler.models.task import TaskStatus
+from datetime import datetime, date, timedelta
 from flask import request, Blueprint, Markup, render_template
-from BlueScheduler.util.resolver import *
-from BlueScheduler.util.markdown import *
+from BlueScheduler.util.resolver import Resolver
+from BlueScheduler.util.markdown import convert_markdown_html
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -25,9 +28,11 @@ def list_plan():
                 markdown_content += "* {}\n".format(str(plan_task))
         if flag:
             markdown_content += "\r\n"
+    logging.info(f"{markdown_content}")
     html_body = convert_markdown_html(markdown_content)
     content = Markup(html_body)
     return render_template('index.html', **locals())
+
 
 @admin_bp.route("/todo/list", methods=['GET'])
 def list_todo():
@@ -50,7 +55,29 @@ def list_todo():
     return render_template('index.html', **locals())
 
 
-@admin_bp.route("/work/list/<int:days>",methods=['GET'])
+@admin_bp.route("/delay/list", methods=['GET'])
+def list_delay():
+    plan_resolver = Resolver()
+    plan_projects = plan_resolver.resolve(settings.SOURCE_PATH)
+    markdown_content = "#我的DELAY#\n"
+    for plan_project_name in plan_projects:
+        flag = False
+        plan_project = plan_projects[plan_project_name]
+        for plan_task in plan_project.get_tasks():
+            if plan_task.is_delay():
+                delay_time = plan_task.delay_time
+                if not flag:
+                    markdown_content += "##{}\n".format(plan_project.name)
+                    flag = True
+                markdown_content += f"* {str(plan_task)}  **已delay{delay_time}天** \n"
+        if flag:
+            markdown_content += "\r\n"
+    html_body = convert_markdown_html(markdown_content)
+    content = Markup(html_body)
+    return render_template('index.html', **locals())
+
+
+@admin_bp.route("/work/list/<int:days>", methods=['GET'])
 def list_week_report(days):
     plan_resolver = Resolver()
     plan_projects = plan_resolver.resolve(settings.SOURCE_PATH)
@@ -58,7 +85,8 @@ def list_week_report(days):
     for plan_project_name in plan_projects:
         flag = False
         plan_project = plan_projects[plan_project_name]
-        for plan_task in plan_project.get_completed_tasks(date.fromtimestamp(time.time())-timedelta(days=days),date.fromtimestamp(time.time())):
+        for plan_task in plan_project.get_completed_tasks(
+                date.fromtimestamp(time.time()) - timedelta(days=days), date.fromtimestamp(time.time())):
             if not flag:
                 markdown_content += "##{}\n".format(plan_project.name)
                 flag = True

@@ -1,4 +1,5 @@
 # BlueScheduler
+
 A simple todo scheduler for Python
 
 ## 基本介绍
@@ -85,4 +86,8 @@ http://127.0.0.1:9288/admin/todo/list 待完成的todo
 http://127.0.0.1:9288/admin/plan/list 全部todo
 http://127.0.0.1:9288/work/list/n 最近n天完成的todo
 ```
+
+## TODO
+
+* 支持预期时间:task支持@schedule(21-01-21 14:31)
 
